@@ -1,11 +1,11 @@
 # Formal Language Tool Kit
 
-Progamatic interface for modeling propositional logic. Classes atempted to be writen in a way that is both pythonic and analogous to recursive model theortic definitions.
+Programmatic interface for modeling propositional logic. Classes tempted to be written in a way that is both Pythonic and analogous to recursive model theoretic definitions.
 
 # Propositional Logic
 
 ## Model
-Model any well-formed formulas in propositonal logic and compute its value:
+Model any well-formed formulas in propositional logic and compute its value:
 ```python
 >>> p = Atom('P' True)
 >>> q = Atom('Q', False)
@@ -32,7 +32,7 @@ Compute truth-tables:
 +-------+-------+------------+
 ```
 
-The following table shows modus ponens is logically equivilent to modus tollens.
+The following table shows modus ponens is logically equivalent to modus tollens.
 ```
 >>> ((((P > Q) & P) > Q) == (((P > Q) & ~Q) > ~P)).truth_table()
 +-------+-------+-----------------------------------------------------+
@@ -48,8 +48,8 @@ The following table shows modus ponens is logically equivilent to modus tollens.
 
 # TODO
 
-* Write grammar for parser generator to translate formal locigal syntax into FLTK `parse("P & Q")` returns `And(Atom(P), Atom(Q))`
+* Write grammar for parser generator to translate formal logical syntax into FLTK `parse("P & Q")` returns `And(Atom(P), Atom(Q))`
 * Write `Tableau` class and add more proof theoretic functionality
 * Add `Argument` class.
-* Add support for logical equivilience between formula
+* Add support for logical equivalence between formula
 * Add module for predicate logic
