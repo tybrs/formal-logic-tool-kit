@@ -17,7 +17,6 @@ Or alternatively use operators between formula.
 >>> bool(((P > Q) & P) > Q)
 True
 ```
-Or alternatively use operators between formula.
 Compute truth-tables:
 
 ```
