@@ -1,6 +1,6 @@
 # Formal Language Tool Kit
 
-Programmatic interface for modeling propositional logic. Classes tempted to be written in a way that is both Pythonic and analogous to recursive model theoretic definitions.
+Programmatic interface for modeling propositional logic. Classes attempted to be written in a way that is both Pythonic and analogous to recursive model theoretic definitions.
 
 # Propositional Logic
 
@@ -17,7 +17,7 @@ Or alternatively use operators between formula.
 >>> bool(((P > Q) & P) > Q)
 True
 ```
-
+Or alternatively use operators between formula.
 Compute truth-tables:
 
 ```

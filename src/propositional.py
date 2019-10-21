@@ -4,10 +4,10 @@ from itertools import product
 
 class Atom:
     def __init__(self, var_name: str, truth_value=None):
-        if var_name.isalpha():
+        if var_name.isalnum():
             self.var_name = var_name.upper()
         else:
-            raise ValueError('Only alpha charachters can be atomic'
+            raise ValueError('Only alphanumeric charachters can be atomic'
                              'propositions: "{}" not alpha.'.format(var_name))
         self.truth_value = truth_value
 
@@ -266,8 +266,10 @@ class TruthTable:
 
     def __repr__(self):
         table = PrettyTable()
+
         table.field_names = [repr(phi) for phi in self.universe] + \
             [repr(phi) for phi in self.formulas]
+
         for atoms, formula in zip(self.truth_assignments, self.models):
             table.add_row([bool(phi) for phi in atoms] + [bool(formula)])
         return str(table)
