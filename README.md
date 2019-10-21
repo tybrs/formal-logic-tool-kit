@@ -7,7 +7,7 @@ Progamatic interface for modeling propositional logic. Classes atempted to be wr
 ## Model
 Model any well-formed formulas in propositonal logic and compute its value:
 ```python
->>> p = Atom('P' Tr)
+>>> p = Atom('P' True)
 >>> q = Atom('Q', False)
 >>> modus_ponens = IfThen(And(IfThen(p, q), p), q)
 (((P 🡢 Q) & P) 🡢 Q)
