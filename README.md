@@ -31,7 +31,7 @@ Compute truth-tables:
 
 # TODO
 
-* Write grammar for parser generator to translate formal locigal syntax into FLTK `parse(P & Q)` And()
+* Write grammar for parser generator to translate formal locigal syntax into FLTK `parse(P & Q)` returns `And(Atom(P), Atom(Q))`
 * Write tableau class and add more proof theoretic functionality
 * Add `Argument` class.
 * Add support for logical equivilience between formula
