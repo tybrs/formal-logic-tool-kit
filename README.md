@@ -17,7 +17,7 @@ True
 
 Compute truth-tables:
 
-```python
+```
 >>> Not(And(P, Q)).truth_table()
 +-------+-------+------------+
 |   P   |   Q   | (¬(P & Q)) |
