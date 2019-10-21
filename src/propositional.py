@@ -265,10 +265,9 @@ class TruthTable:
         return models
 
     def __repr__(self):
-        x = PrettyTable()
-        x.field_names = [repr(phi) for phi in self.universe] + \
+        table = PrettyTable()
+        table.field_names = [repr(phi) for phi in self.universe] + \
             [repr(phi) for phi in self.formulas]
         for atoms, formula in zip(self.truth_assignments, self.models):
-            x.add_row([bool(phi) for phi in atoms] +
-                      [bool(formula)])
-        return str(x)
+            table.add_row([bool(phi) for phi in atoms] + [bool(formula)])
+        return str(table)
