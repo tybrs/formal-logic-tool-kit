@@ -20,6 +20,18 @@ class Atom:
     def __iter__(self):
         yield self
 
+    def __and__(self, other):
+        return And(self, other)
+
+    def __or__(self, other):
+        return Or(self, other)
+
+    def __gt__(self, other):
+        return IfThen(self, other)
+
+    def __invert__(self):
+        return Not(self)
+
     def __bool__(self):
         return self.truth_value
 
@@ -27,13 +39,17 @@ class Atom:
         return self.var_name < other.var_name
 
     def __eq__(self, other):
-        return self.var_name == other.var_name
+        if self.truth_value is not None:
+            return self.truth_value == other.truth_value
 
     def __hash__(self):
         return id(self.var_name)
 
     def copy(self):
         return Atom(self.var_name, truth_value=self.truth_value)
+
+    def get_atoms(self):
+        return self
 
 
 class Formula:
@@ -49,6 +65,24 @@ class Formula:
 
     def __repr__(self):
         return repr(self.phi)
+
+    def __iter__(self):
+        yield self
+
+    def __and__(self, other):
+        return And(self, other)
+
+    def __or__(self, other):
+        return Or(self, other)
+
+    def __gt__(self, other):
+        return IfThen(self, other)
+
+    def __eq__(self, other):
+        return Iff(self, other)
+
+    def __invert__(self):
+        return Not(self)
 
     def parse(self, phi):
         if isinstance(phi, Atom):
@@ -145,6 +179,26 @@ class IfThen(Formula):
 
     def copy(self):
         return IfThen(self.phi.copy(), self.psi.copy())
+
+    def truth_table(self):
+        return TruthTable([self])
+
+
+class Iff(Formula):
+    def __init__(self, phi: Formula, psi: Formula):
+        self.n_ary = 2
+        self.phi = phi
+        self.psi = psi
+
+    def __repr__(self):
+        return '({} 🡘 {})'.format(repr(self.phi), repr(self.psi))
+
+    def __bool__(self):
+        return (bool(self.phi) and bool(self.psi)) or \
+            not(bool(self.phi) or bool(self.psi))
+
+    def copy(self):
+        return Iff(self.phi.copy(), self.psi.copy())
 
     def truth_table(self):
         return TruthTable([self])

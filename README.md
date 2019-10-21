@@ -9,9 +9,12 @@ Model any well-formed formulas in propositonal logic and compute its value:
 ```python
 >>> p = Atom('P' True)
 >>> q = Atom('Q', False)
->>> modus_ponens = IfThen(And(IfThen(p, q), p), q)
+>>> IfThen(And(IfThen(p, q), p), q)
 (((P 🡢 Q) & P) 🡢 Q)
->>> bool(modus_ponens)
+```
+Or alternatively use operators between formula.
+```
+>>> bool(((P > Q) & P) > Q)
 True
 ```
 
@@ -29,10 +32,24 @@ Compute truth-tables:
 +-------+-------+------------+
 ```
 
+The following table shows modus ponens is logically equivilent to modus tollens.
+```
+>>> ((((P > Q) & P) > Q) == (((P > Q) & ~Q) > ~P)).truth_table()
++-------+-------+-----------------------------------------------------+
+|   P   |   Q   | ((((P 🡢 Q) & P) 🡢 Q) 🡘 (((P 🡢 Q) & (¬Q)) 🡢 (¬P))) |
++-------+-------+-----------------------------------------------------+
+|  True |  True |                        True                         |
+|  True | False |                        True                         |
+| False |  True |                        True                         |
+| False | False |                        True                         |
++-------+-------+-----------------------------------------------------+
+```
+
+
 # TODO
 
-* Write grammar for parser generator to translate formal locigal syntax into FLTK `parse(P & Q)` returns `And(Atom(P), Atom(Q))`
-* Write tableau class and add more proof theoretic functionality
+* Write grammar for parser generator to translate formal locigal syntax into FLTK `parse("P & Q")` returns `And(Atom(P), Atom(Q))`
+* Write `Tableau` class and add more proof theoretic functionality
 * Add `Argument` class.
 * Add support for logical equivilience between formula
 * Add module for predicate logic
