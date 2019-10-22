@@ -3,13 +3,12 @@ from itertools import product
 
 
 class Atom:
+
     def __init__(self, var_name: str, truth_value=None):
-        if var_name.isalnum():
-            self.var_name = var_name.upper()
-        else:
-            raise ValueError('Only alphanumeric charachters can be atomic'
-                             'propositions: "{}" not alpha.'.format(var_name))
+
         self.truth_value = truth_value
+
+        self.var_name = self.get_varname(var_name)
 
     def __repr__(self):
         if self.truth_value is not None:
@@ -51,17 +50,23 @@ class Atom:
     def get_atoms(self):
         return self
 
+    def get_varname(self, var_name):
+        if var_name.isalnum():
+            return var_name.upper()
+        else:
+            raise ValueError('Only alphanumeric charachters can be atomic'
+                             'propositions: "{}" not alpha.'.format(var_name))
+
 
 class Formula:
+
     def __init__(self, phi):
         self.phi = phi
         self.psi = None
-        self.atoms = set()
-        self.get_all_atoms(self.phi)
-        self.atoms = sorted(self.atoms)
+        self.atoms = sorted(self.get_atoms())
 
     def __bool__(self):
-        return self.parse(self)
+        return bool(self.phi)
 
     def __repr__(self):
         return repr(self.phi)
@@ -76,26 +81,13 @@ class Formula:
         return Or(self, other)
 
     def __gt__(self, other):
-        return IfThen(self, other)
+        return (IfThen(self, other))
 
     def __eq__(self, other):
         return Iff(self, other)
 
     def __invert__(self):
         return Not(self)
-
-    def parse(self, phi):
-        if isinstance(phi, Atom):
-            return bool(phi)
-        elif isinstance(phi, Formula):
-            return self.parse(phi)
-
-    def get_all_atoms(self, phi):
-        if isinstance(phi, Atom):
-            self.atoms.add(phi)
-            return
-        elif isinstance(phi, Formula):
-            return self.atoms.update(phi.get_atoms())
 
     def get_atoms(self):
         atoms = set()
@@ -106,7 +98,7 @@ class Formula:
 
         if isinstance(self.psi, Atom):
             atoms.add(self.psi)
-        else:
+        elif self.psi:
             atoms.update(self.psi.get_atoms())
         return atoms
 
@@ -126,12 +118,17 @@ class Formula:
             self.psi.replace_atom(atom)
         return self
 
+    def truth_table(self):
+        return TruthTable([self])
+
 
 class And(Formula):
+
     def __init__(self, phi: Formula, psi: Formula):
         self.n_ary = 2
         self.phi = phi
         self.psi = psi
+        self.atoms = sorted(self.get_atoms())
 
     def __repr__(self):
         return '({} & {})'.format(repr(self.phi), repr(self.psi))
@@ -142,15 +139,14 @@ class And(Formula):
     def copy(self):
         return And(self.phi.copy(), self.psi.copy())
 
-    def truth_table(self):
-        return TruthTable([self])
-
 
 class Or(Formula):
+
     def __init__(self, phi: Formula, psi: Formula):
         self.n_ary = 2
         self.phi = phi
         self.psi = psi
+        self.atoms = sorted(self.get_atoms())
 
     def __repr__(self):
         return '({} v {})'.format(repr(self.phi), repr(self.psi))
@@ -161,15 +157,14 @@ class Or(Formula):
     def copy(self):
         return Or(self.phi.copy(), self.psi.copy())
 
-    def truth_table(self):
-        return TruthTable([self])
-
 
 class IfThen(Formula):
+
     def __init__(self, phi: Formula, psi: Formula):
         self.n_ary = 2
         self.phi = phi
         self.psi = psi
+        self.atoms = sorted(self.get_atoms())
 
     def __repr__(self):
         return '({} 🡢 {})'.format(repr(self.phi), repr(self.psi))
@@ -180,15 +175,14 @@ class IfThen(Formula):
     def copy(self):
         return IfThen(self.phi.copy(), self.psi.copy())
 
-    def truth_table(self):
-        return TruthTable([self])
-
 
 class Iff(Formula):
+
     def __init__(self, phi: Formula, psi: Formula):
         self.n_ary = 2
         self.phi = phi
         self.psi = psi
+        self.atoms = sorted(self.get_atoms())
 
     def __repr__(self):
         return '({} 🡘 {})'.format(repr(self.phi), repr(self.psi))
@@ -200,15 +194,14 @@ class Iff(Formula):
     def copy(self):
         return Iff(self.phi.copy(), self.psi.copy())
 
-    def truth_table(self):
-        return TruthTable([self])
-
 
 class Not(Formula):
+
     def __init__(self, phi: Formula):
         self.n_ary = 1
         self.phi = phi
         self.psi = None
+        self.atoms = sorted(self.get_atoms())
 
     def __repr__(self):
         return '(¬{})'.format(repr(self.phi))
@@ -225,11 +218,9 @@ class Not(Formula):
         else:
             return self.phi.get_atoms()
 
-    def truth_table(self):
-        return TruthTable([self])
-
 
 class TruthTable:
+
     def __init__(self, formulas):
         self.formulas = formulas
         self.atoms = [Formula(phi).atoms for phi in formulas]
