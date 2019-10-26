@@ -10,6 +10,8 @@ class Atom:
 
         self.var_name = self.get_varname(var_name)
 
+        self.symbol = 'α'
+
     def __repr__(self):
         if self.truth_value is not None:
             return '{}={}'.format(self.var_name, self.truth_value)
@@ -47,8 +49,13 @@ class Atom:
     def copy(self):
         return Atom(self.var_name, truth_value=self.truth_value)
 
-    def tree(self):
-        return ['α', self.var_name]
+    def tree(self, dtype='list'):
+        if dtype == 'list':
+            return [self.symbol, self.var_name]
+        elif dtype == 'str':
+            return "[{} {}]".format(self.symbol, self.var_name)
+        elif dtype == 'dict':
+            return {'label': self.symbol, 'constituents': self.var_name}
 
     def get_atoms(self):
         return self
@@ -101,7 +108,7 @@ class Formula:
 
         if isinstance(self.psi, Atom):
             atoms.add(self.psi)
-        elif self.psi:
+        elif self.psi is not None:
             atoms.update(self.psi.get_atoms())
         return atoms
 
@@ -124,6 +131,17 @@ class Formula:
     def truth_table(self):
         return TruthTable([self])
 
+    def tree(self, dtype='list'):
+        if dtype == 'list':
+            return [self.symbol, self.phi.tree(dtype), self.psi.tree(dtype)]
+        elif dtype == 'str':
+            return "[{} {} {}]".format(self.symbol, self.phi.tree(dtype),
+                                       self.psi.tree(dtype))
+        elif dtype == 'dict':
+            return {'label': self.symbol,
+                    'constituents': [self.phi.tree(dtype),
+                                     self.psi.tree(dtype)]}
+
 
 class And(Formula):
 
@@ -132,15 +150,13 @@ class And(Formula):
         self.phi = phi
         self.psi = psi
         self.atoms = sorted(self.get_atoms())
+        self.symbol = '&'
 
     def __repr__(self):
-        return '({} & {})'.format(repr(self.phi), repr(self.psi))
+        return '({} {} {})'.format(repr(self.phi), self.symbol, repr(self.psi))
 
     def __bool__(self):
         return bool(self.phi) and bool(self.psi)
-
-    def tree(self):
-        return ['&', self.phi.tree(), self.psi.tree()]
 
     def copy(self):
         return And(self.phi.copy(), self.psi.copy())
@@ -153,18 +169,16 @@ class Or(Formula):
         self.phi = phi
         self.psi = psi
         self.atoms = sorted(self.get_atoms())
+        self.symbol = '∨'
 
     def __repr__(self):
-        return '({} ∨ {})'.format(repr(self.phi), repr(self.psi))
+        return '({} {} {})'.format(repr(self.phi), self.symbol, repr(self.psi))
 
     def __bool__(self):
         return bool(self.phi) or bool(self.psi)
 
     def copy(self):
         return Or(self.phi.copy(), self.psi.copy())
-
-    def tree(self):
-        return ['∨', self.phi.tree(), self.psi.tree()]
 
 
 class IfThen(Formula):
@@ -174,18 +188,16 @@ class IfThen(Formula):
         self.phi = phi
         self.psi = psi
         self.atoms = sorted(self.get_atoms())
+        self.symobl = '🡢'
 
     def __repr__(self):
-        return '({} 🡢 {})'.format(repr(self.phi), repr(self.psi))
+        return '({} {} {})'.format(repr(self.phi), self.symbol, repr(self.psi))
 
     def __bool__(self):
         return (not bool(self.phi)) or bool(self.psi)
 
     def copy(self):
         return IfThen(self.phi.copy(), self.psi.copy())
-
-    def tree(self):
-        return ['🡢', self.phi.tree(), self.psi.tree()]
 
 
 class Iff(Formula):
@@ -195,9 +207,10 @@ class Iff(Formula):
         self.phi = phi
         self.psi = psi
         self.atoms = sorted(self.get_atoms())
+        self.symbol = '🡘'
 
     def __repr__(self):
-        return '({} 🡘 {})'.format(repr(self.phi), repr(self.psi))
+        return '({} {} {})'.format(repr(self.phi), self.symbol, repr(self.psi))
 
     def __bool__(self):
         return (bool(self.phi) and bool(self.psi)) or \
@@ -205,9 +218,6 @@ class Iff(Formula):
 
     def copy(self):
         return Iff(self.phi.copy(), self.psi.copy())
-
-    def tree(self):
-        return ['🡘', self.phi.tree(), self.psi.tree()]
 
 
 class Not(Formula):
@@ -217,9 +227,10 @@ class Not(Formula):
         self.phi = phi
         self.psi = None
         self.atoms = sorted(self.get_atoms())
+        self.symbol = '¬'
 
     def __repr__(self):
-        return '(¬{})'.format(repr(self.phi))
+        return '{}({})'.format(self.symbol, repr(self.phi))
 
     def __bool__(self):
         return not (bool(self.phi))
@@ -233,8 +244,13 @@ class Not(Formula):
         else:
             return self.phi.get_atoms()
 
-    def tree(self):
-        return ['¬', self.phi.tree()]
+    def tree(self, dtype='list'):
+        if dtype == 'list':
+            return [self.symbol, self.phi.tree(dtype)]
+        elif dtype == 'str':
+            return "[{} {}]".format(self.symbol, self.phi.tree(dtype))
+        elif dtype == 'dict':
+            return {'label': self.symbol, 'constituents': self.phi.tree(dtype)}
 
 
 class TruthTable:
