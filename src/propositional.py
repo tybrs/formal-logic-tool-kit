@@ -47,6 +47,9 @@ class Atom:
     def copy(self):
         return Atom(self.var_name, truth_value=self.truth_value)
 
+    def tree(self):
+        return ['α', self.var_name]
+
     def get_atoms(self):
         return self
 
@@ -136,6 +139,9 @@ class And(Formula):
     def __bool__(self):
         return bool(self.phi) and bool(self.psi)
 
+    def tree(self):
+        return ['&', self.phi.tree(), self.psi.tree()]
+
     def copy(self):
         return And(self.phi.copy(), self.psi.copy())
 
@@ -149,13 +155,16 @@ class Or(Formula):
         self.atoms = sorted(self.get_atoms())
 
     def __repr__(self):
-        return '({} v {})'.format(repr(self.phi), repr(self.psi))
+        return '({} ∨ {})'.format(repr(self.phi), repr(self.psi))
 
     def __bool__(self):
         return bool(self.phi) or bool(self.psi)
 
     def copy(self):
         return Or(self.phi.copy(), self.psi.copy())
+
+    def tree(self):
+        return ['∨', self.phi.tree(), self.psi.tree()]
 
 
 class IfThen(Formula):
@@ -175,6 +184,9 @@ class IfThen(Formula):
     def copy(self):
         return IfThen(self.phi.copy(), self.psi.copy())
 
+    def tree(self):
+        return ['🡢', self.phi.tree(), self.psi.tree()]
+
 
 class Iff(Formula):
 
@@ -193,6 +205,9 @@ class Iff(Formula):
 
     def copy(self):
         return Iff(self.phi.copy(), self.psi.copy())
+
+    def tree(self):
+        return ['🡘', self.phi.tree(), self.psi.tree()]
 
 
 class Not(Formula):
@@ -217,6 +232,9 @@ class Not(Formula):
             return set(self.phi)
         else:
             return self.phi.get_atoms()
+
+    def tree(self):
+        return ['¬', self.phi.tree()]
 
 
 class TruthTable:
@@ -244,10 +262,10 @@ class TruthTable:
         return {atom: bool(atom) for atom in self.universe}
 
     def purm_truth(self):
-        return list(product([True, False], repeat=len(self.universe)))
+        return product([True, False], repeat=len(self.universe))
 
     def assign_truth(self):
-        model_values = self.purm_truth()
+        model_values = list(self.purm_truth())
         models = [tuple(atom.copy() for atom in self.universe)
                   for value in model_values]
         for atoms, values in zip(models, model_values):
